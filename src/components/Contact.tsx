@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, Phone, Linkedin, Github, Send, CheckCircle } from 'lucide-react';
-
+import emailjs from 'emailjs-com';
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -11,18 +11,31 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+ const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: '', email: '', message: '' });
+  emailjs
+    .send(
+      'service_gvsygr6',   // ✅ Your Service ID
+      'template_n9xg10d',  // ✅ Your Template ID
+      formData,
+      'UMjPH0JxcoCYX3Eua'  // ✅ Your Public Key
+    )
+    .then(
+      () => {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
 
-      setTimeout(() => setIsSubmitted(false), 3000);
-    }, 2000);
-  };
+        setTimeout(() => setIsSubmitted(false), 3000);
+      },
+      (error) => {
+        console.error('FAILED...', error.text);
+        setIsSubmitting(false);
+      }
+    );
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
